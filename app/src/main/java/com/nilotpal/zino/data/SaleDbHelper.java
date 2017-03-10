@@ -29,7 +29,7 @@ public class SaleDbHelper extends SQLiteOpenHelper{
                 +SaleEntry.COLUMN_ITEM_DESCRIPTION+" TEXT ,"
                 +SaleEntry.COLUMN_ITEM_UNIT_PRICE+" INTEGER NOT NULL ,"
                 +SaleEntry.COLUMN_ITEM_QUANTITY+" INTEGER DEFAULT 0 ,"
-                +SaleEntry.COLUMN_ITEM_IMAGE+" TEXT);"
+                +SaleEntry.COLUMN_ITEM_IMAGE+" TEXT DEFAULT NULL);"
                 ;
         Log.e(LOG_TAG,SQL_CREATE_SALE_TABLE);
         db.execSQL(SQL_CREATE_SALE_TABLE);

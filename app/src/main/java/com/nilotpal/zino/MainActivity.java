@@ -1,5 +1,6 @@
 package com.nilotpal.zino;
 
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -55,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
             }
         });
 
-
+        //Delete the entire table
         final Button deleteTable=(Button) findViewById(R.id.deleteTable);
         deleteTable.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,15 +66,29 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
             }
         });
 
-
+        //List View
         listItems=(ListView) findViewById(R.id.list);
 
         //Set Empty View
         View emptyView=(View)findViewById(R.id.emptyView);
         listItems.setEmptyView(emptyView);
 
+        //Initialise Cursor Adapter and setAdapter to the Cursor Adapter
+
         mCursorAdapter=new SaleCursorAdapter(this,null);
         listItems.setAdapter(mCursorAdapter);
+
+        listItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                Log.e(LOG_TAG,"Item Clicked");
+                Intent intent=new Intent(MainActivity.this,EditorActivity.class);
+                Uri currentItemUri= ContentUris.withAppendedId(SaleEntry.CONTENT_URI,id);
+                intent.setData(currentItemUri);
+                startActivity(intent);
+            }
+        });
+
         getLoaderManager().initLoader(SALE_LOADER,null,this);
     }
 
@@ -80,8 +96,8 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
 //        SQLiteDatabase db= mDbHelper.getWritableDatabase();
         ContentValues value=new ContentValues();
 
-        value.put(SaleEntry.COLUMN_ITEM_NAME,"Tester");
-        value.put(SaleEntry.COLUMN_ITEM_DESCRIPTION,"This is testing testing");
+        value.put(SaleEntry.COLUMN_ITEM_NAME,"Generic");
+        value.put(SaleEntry.COLUMN_ITEM_DESCRIPTION,"This is a generic description");
         value.put(SaleEntry.COLUMN_ITEM_UNIT_PRICE,60);
         value.put(SaleEntry.COLUMN_ITEM_QUANTITY,35);
         value.put(SaleEntry.COLUMN_ITEM_IMAGE,"null");

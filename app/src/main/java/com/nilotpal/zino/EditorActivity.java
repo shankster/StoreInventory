@@ -9,6 +9,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -33,6 +34,18 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
+
+        //Gathering Data from the Main Activity
+        Intent intent=getIntent();
+        Uri currentItemUri=intent.getData();
+
+        if(currentItemUri==null){
+            setTitle("Add a new item");
+        }
+        else {
+            setTitle("Edit an existing item");
+        }
+
 
         mName=(EditText)findViewById(R.id.name);
         mDescription=(EditText)findViewById(R.id.description);
@@ -76,9 +89,15 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                insertItem();
-                Intent intent=new Intent(EditorActivity.this,MainActivity.class);
-                startActivity(intent);
+                Boolean isWrong=validateData();
+                if(!isWrong){
+                    insertItem();
+                    Intent intent=new Intent(EditorActivity.this,MainActivity.class);
+                    startActivity(intent);
+                }
+                else if(isWrong){
+                    Toast.makeText(EditorActivity.this,"Enter valid values",Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
@@ -103,6 +122,33 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         else{
             Toast.makeText(this,"Entry sucessfull in Editor Activity",Toast.LENGTH_SHORT).show();
         }
+    }
+    private boolean validateData(){
+        String nameValue=mName.getText().toString().trim();
+        String descriptionValue=mDescription.getText().toString().trim();
+        String unitPriceValue=mUnitPrice.getText().toString().trim();
+        String quantityValue=mQuantity.getText().toString().trim();
+        int count=0;
+        if(TextUtils.isEmpty(nameValue)){
+            Toast.makeText(this,"Enter a name value",Toast.LENGTH_SHORT).show();
+            count++;
+        }
+        if(TextUtils.isEmpty(descriptionValue)){
+            Toast.makeText(this,"Enter a description value",Toast.LENGTH_SHORT).show();
+            count++;
+        }
+        if(TextUtils.isEmpty(unitPriceValue)){
+            Toast.makeText(this,"Enter a price value",Toast.LENGTH_SHORT).show();
+            count++;
+        }
+        if(TextUtils.isEmpty(quantityValue)){
+            Toast.makeText(this,"Enter a quantity value",Toast.LENGTH_SHORT).show();
+            count++;
+        }
+        if(count>0){
+            return true;
+        }
+        return false;
     }
 
     @Override
