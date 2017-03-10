@@ -21,7 +21,8 @@
             android:authorities="com.nilotpal.zino"
             android:exported="false" />
 
-        <activity android:name=".SaleCursorAdapter"></activity>
+        <activity android:name=".SaleCursorAdapter" />
+        <activity android:name=".EditorActivity"></activity>
     </application>
 
 </manifest>

@@ -10,12 +10,32 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.nilotpal.zino.MainActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/addDummy"
-        android:layout_width="wrap_content"
+        <Button
+        android:id="@+id/addItem"
+        android:layout_width="0dp"
+        android:layout_weight="1"
         android:layout_height="wrap_content"
-        android:text="Add Dummy Content"/>
+        android:text="Add Item"/>
+
+        <Button
+            android:id="@+id/addDummy"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Add Dummy" />
+
+        <Button
+            android:id="@+id/deleteTable"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Delete"/>
+
+    </LinearLayout>
     <ListView
         android:id="@+id/list"
         android:layout_width="match_parent"

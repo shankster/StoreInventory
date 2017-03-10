@@ -2,6 +2,7 @@ package com.nilotpal.zino;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
@@ -34,14 +35,35 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mDbHelper=new SaleDbHelper(this);
+
+        //Add dummy content
         Button dummyAdd=(Button) findViewById(R.id.addDummy);
         dummyAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 addDummyItem();
-//                displayDatabaseInfo();
             }
         });
+
+        //Add an item to the database
+        Button addItem=(Button) findViewById(R.id.addItem);
+        addItem.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent=new Intent(MainActivity.this,EditorActivity.class);
+                startActivity(intent);
+            }
+        });
+
+
+        final Button deleteTable=(Button) findViewById(R.id.deleteTable);
+        deleteTable.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteEntireTable();
+            }
+        });
+
 
         listItems=(ListView) findViewById(R.id.list);
 
@@ -91,6 +113,11 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
         SaleCursorAdapter cursorAdapter=new SaleCursorAdapter(this,returnCursor());
         listItems.setAdapter(cursorAdapter);
 
+    }
+
+    private void deleteEntireTable(){
+        int noOfDeletedItems=getContentResolver().delete(SaleEntry.CONTENT_URI,null,null);
+        Toast.makeText(this,noOfDeletedItems+" items deleted",Toast.LENGTH_SHORT).show();
     }
 
     @Override

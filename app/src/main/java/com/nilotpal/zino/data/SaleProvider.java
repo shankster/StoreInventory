@@ -49,6 +49,9 @@ public class SaleProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Cannot query unknown Uri " + uri);
         }
+
+        cursor.setNotificationUri(getContext().getContentResolver(),uri);
+
         return cursor;
     }
 
@@ -98,6 +101,9 @@ public class SaleProvider extends ContentProvider {
             return null;
         } else
             Log.e(LOG_TAG, "Inserted Sale Succesfully using Provider Class");
+
+        getContext().getContentResolver().notifyChange(uri,null);
+
         return ContentUris.withAppendedId(uri, id);
     }
 
@@ -105,16 +111,23 @@ public class SaleProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         SQLiteDatabase db=mDbHelper.getWritableDatabase();
         final int match=sUriMatcher.match(uri);
+        int rowsDeleted;
         switch (match){
             case SALE:
-                return db.delete(SaleEntry.TABLE_NAME,selection,selectionArgs);
+                rowsDeleted=db.delete(SaleEntry.TABLE_NAME,selection,selectionArgs);
+                break;
             case SALE_ID:
                 selection=SaleEntry._ID+"=?";
                 selectionArgs=new String[]{String.valueOf(ContentUris.parseId(uri))};
-                return db.delete(SaleEntry.TABLE_NAME,selection,selectionArgs);
+                rowsDeleted=db.delete(SaleEntry.TABLE_NAME,selection,selectionArgs);;
+                break;
             default:
                 throw new IllegalArgumentException("Delete operation not supported for "+uri);
         }
+        if(rowsDeleted!=0){
+            getContext().getContentResolver().notifyChange(uri,null);
+        }
+        return rowsDeleted;
     }
 
     @Override
@@ -160,6 +173,10 @@ public class SaleProvider extends ContentProvider {
         }
 
         SQLiteDatabase db=mDbHelper.getWritableDatabase();
+        int rowsUpdated=db.update(SaleEntry.TABLE_NAME,values,selection,selectionArgs);
+        if(rowsUpdated != 0){
+            getContext().getContentResolver().notifyChange(uri,null);
+        }
         return db.update(SaleEntry.TABLE_NAME,values,selection,selectionArgs);
     }
 }
