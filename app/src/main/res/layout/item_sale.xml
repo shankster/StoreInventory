@@ -51,6 +51,7 @@
         android:paddingTop="8dp"
         />
         <Button
+            android:focusable="false"
             android:id="@+id/saleMain"
             android:layout_width="0dp"
             android:layout_weight="1"

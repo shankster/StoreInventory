@@ -159,15 +159,15 @@ public class SaleProvider extends ContentProvider {
         }
 
         if (values.containsKey(SaleEntry.COLUMN_ITEM_DESCRIPTION)) {
-            String name = values.getAsString(SaleEntry.COLUMN_ITEM_DESCRIPTION);
-            if (name == null) {
+            String description = values.getAsString(SaleEntry.COLUMN_ITEM_DESCRIPTION);
+            if (description == null) {
                 throw new IllegalArgumentException("Item requires a description");
             }
         }
 
         if (values.containsKey(SaleEntry.COLUMN_ITEM_UNIT_PRICE)) {
-            Integer name = values.getAsInteger(SaleEntry.COLUMN_ITEM_DESCRIPTION);
-            if (name == null) {
+            Integer price = values.getAsInteger(SaleEntry.COLUMN_ITEM_UNIT_PRICE);
+            if (price == null) {
                 throw new IllegalArgumentException("Item requires an unit price");
             }
         }
