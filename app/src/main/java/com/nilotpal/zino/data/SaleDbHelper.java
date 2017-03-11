@@ -29,7 +29,7 @@ public class SaleDbHelper extends SQLiteOpenHelper{
                 +SaleEntry.COLUMN_ITEM_DESCRIPTION+" TEXT ,"
                 +SaleEntry.COLUMN_ITEM_UNIT_PRICE+" INTEGER NOT NULL ,"
                 +SaleEntry.COLUMN_ITEM_QUANTITY+" INTEGER DEFAULT 0 ,"
-                +SaleEntry.COLUMN_ITEM_IMAGE+" TEXT DEFAULT NULL"
+                +SaleEntry.COLUMN_ITEM_IMAGE+" TEXT DEFAULT NULL ,"
                 +SaleEntry.COLUMN_ITEM_SUPPLIER+" TEXT"+
                 ");"
                 ;

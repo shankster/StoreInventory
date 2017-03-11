@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
         value.put(SaleEntry.COLUMN_ITEM_UNIT_PRICE,60);
         value.put(SaleEntry.COLUMN_ITEM_QUANTITY,35);
         value.put(SaleEntry.COLUMN_ITEM_IMAGE,"null");
+        value.put(SaleEntry.COLUMN_ITEM_SUPPLIER,"Neotron");
 
         Uri newUri=getContentResolver().insert(SaleEntry.CONTENT_URI,value);
 

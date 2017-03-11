@@ -31,6 +31,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private EditText mUnitPrice;
     private EditText mQuantity;
     private EditText mImage;
+    private EditText mSupplier;
 
     //Boolean counter to keep track whether the data has changed or not
     private Boolean mItemHasChanged=false;
@@ -54,6 +55,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
         if(mCurrentSaleUri==null){
             Button delete=(Button) findViewById(R.id.delete) ;
+            Button order=(Button) findViewById(R.id.order);
+            order.setVisibility(View.INVISIBLE);
             delete.setVisibility(View.INVISIBLE);
             setTitle("Add a new item");
         }
@@ -68,12 +71,15 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mDescription=(EditText)findViewById(R.id.description);
         mUnitPrice=(EditText)findViewById(R.id.unitPrice);
         mQuantity=(EditText)findViewById(R.id.quantity);
+        mSupplier=(EditText) findViewById(R.id.supplier);
+
 
         //Set On Touch Listeners
         mName.setOnTouchListener(mTouchListener);
         mDescription.setOnTouchListener(mTouchListener);
         mUnitPrice.setOnTouchListener(mTouchListener);
         mQuantity.setOnTouchListener(mTouchListener);
+        mSupplier.setOnTouchListener(mTouchListener);
 
 
         Button receiveButton=(Button) findViewById(R.id.receive);
@@ -126,6 +132,25 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             }
         });
 
+        Button order=(Button) findViewById(R.id.order);
+        order.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.e(EditorActivity.class.getName(),getSupplierEmail());
+                String emailid=getSupplierEmail().toLowerCase()+"@gmail.com";
+                System.out.print(emailid);
+                Intent intent=new Intent(Intent.ACTION_SENDTO);
+                intent.setType("*/*");
+                intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+                intent.putExtra(Intent.EXTRA_EMAIL,new String[] {emailid});
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Please send me more of this stuff");
+                intent.putExtra(Intent.EXTRA_TEXT,"I want to order more of this product. Please send me by mail.");
+                if (intent.resolveActivity(getPackageManager()) != null) {
+                    startActivity(intent);
+                }
+            }
+        });
+
         final Button deleteItem=(Button) findViewById(R.id.delete);
         deleteItem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -142,12 +167,16 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         String descriptionValue = mDescription.getText().toString().trim();
         String unitPriceValue = mUnitPrice.getText().toString().trim();
         String quantityValue = mQuantity.getText().toString().trim();
+        String supplierValue=mSupplier.getText().toString().trim();
+
 
         ContentValues values = new ContentValues();
         values.put(SaleEntry.COLUMN_ITEM_NAME, nameValue);
         values.put(SaleEntry.COLUMN_ITEM_DESCRIPTION, descriptionValue);
         values.put(SaleEntry.COLUMN_ITEM_UNIT_PRICE, unitPriceValue);
         values.put(SaleEntry.COLUMN_ITEM_QUANTITY, quantityValue);
+        values.put(SaleEntry.COLUMN_ITEM_SUPPLIER,supplierValue);
+
 
 
         if (mCurrentSaleUri == null) {
@@ -175,6 +204,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         String descriptionValue=mDescription.getText().toString().trim();
         String unitPriceValue=mUnitPrice.getText().toString().trim();
         String quantityValue=mQuantity.getText().toString().trim();
+        String supplierValue=mSupplier.getText().toString().trim();
         int count=0;
         if(TextUtils.isEmpty(nameValue)){
             Toast.makeText(this,"Enter a name value",Toast.LENGTH_SHORT).show();
@@ -190,6 +220,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
         if(TextUtils.isEmpty(quantityValue)){
             Toast.makeText(this,"Enter a quantity value",Toast.LENGTH_SHORT).show();
+            count++;
+        }
+        if(TextUtils.isEmpty(supplierValue)){
+            Toast.makeText(this,"Enter a supplier value",Toast.LENGTH_SHORT).show();
             count++;
         }
         if(count>0){
@@ -231,6 +265,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         }
     }
 
+    private String getSupplierEmail(){
+        return mSupplier.getText().toString().trim();
+    }
+
     @Override
     public void onBackPressed() {
 
@@ -258,7 +296,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 SaleEntry.COLUMN_ITEM_NAME,
                 SaleEntry.COLUMN_ITEM_DESCRIPTION,
                 SaleEntry.COLUMN_ITEM_UNIT_PRICE,
-                SaleEntry.COLUMN_ITEM_QUANTITY
+                SaleEntry.COLUMN_ITEM_QUANTITY,
+                SaleEntry.COLUMN_ITEM_SUPPLIER
         };
         return new CursorLoader(this,
                 mCurrentSaleUri,
@@ -280,17 +319,20 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             int descriptionColumnIndex=cursor.getColumnIndex(SaleEntry.COLUMN_ITEM_DESCRIPTION);
             int unitPriceColumnIndex=cursor.getColumnIndex(SaleEntry.COLUMN_ITEM_UNIT_PRICE);
             int quantityColumnIndex=cursor.getColumnIndex(SaleEntry.COLUMN_ITEM_QUANTITY);
+            int supplierColumnIndex=cursor.getColumnIndex(SaleEntry.COLUMN_ITEM_SUPPLIER);
 
 
             String name=cursor.getString(nameColumnIndex);
             String description=cursor.getString(descriptionColumnIndex);
             int unitPrice=cursor.getInt(unitPriceColumnIndex);
             int quantity=cursor.getInt(quantityColumnIndex);
+            String supplier=cursor.getString(supplierColumnIndex);
 
             mName.setText(name);
             mDescription.setText(description);
             mUnitPrice.setText(Integer.toString(unitPrice));
             mQuantity.setText(Integer.toString(quantity));
+            mSupplier.setText(supplier);
         }
     }
 
@@ -300,6 +342,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mDescription.setText("");
         mUnitPrice.setText("");
         mQuantity.setText("");
-
+        mSupplier.setText("");
     }
 }
