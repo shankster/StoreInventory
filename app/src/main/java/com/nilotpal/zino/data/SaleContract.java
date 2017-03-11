@@ -25,6 +25,7 @@ public class SaleContract {
         public static final String COLUMN_ITEM_UNIT_PRICE="price";
         public static final String COLUMN_ITEM_QUANTITY="quantity";
         public static final String COLUMN_ITEM_IMAGE="image";
+        public static final String COLUMN_ITEM_SUPPLIER="supplier";
 
     }
 }
