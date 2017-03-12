@@ -24,22 +24,21 @@ import android.widget.SimpleCursorAdapter;
 import com.nilotpal.zino.data.SaleContract.SaleEntry;
 import com.nilotpal.zino.data.SaleDbHelper;
 
-public class MainActivity extends AppCompatActivity implements  LoaderManager.LoaderCallbacks<Cursor>
-{
-    private static final String LOG_TAG=MainActivity.class.getName();
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final String LOG_TAG = MainActivity.class.getName();
     public static SaleDbHelper mDbHelper;
     private ListView listItems;
-    private static final int SALE_LOADER=0;
+    private static final int SALE_LOADER = 0;
     private SaleCursorAdapter mCursorAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mDbHelper=new SaleDbHelper(this);
+        mDbHelper = new SaleDbHelper(this);
 
         //Add dummy content
-        Button dummyAdd=(Button) findViewById(R.id.addDummy);
+        Button dummyAdd = (Button) findViewById(R.id.addDummy);
         dummyAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -48,17 +47,17 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
         });
 
         //Add an item to the database
-        Button addItem=(Button) findViewById(R.id.addItem);
+        Button addItem = (Button) findViewById(R.id.addItem);
         addItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent=new Intent(MainActivity.this,EditorActivity.class);
+                Intent intent = new Intent(MainActivity.this, EditorActivity.class);
                 startActivity(intent);
             }
         });
 
         //Delete the entire table
-        final Button deleteTable=(Button) findViewById(R.id.deleteTable);
+        final Button deleteTable = (Button) findViewById(R.id.deleteTable);
         deleteTable.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,54 +66,54 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
         });
 
         //List View
-        listItems=(ListView) findViewById(R.id.list);
+        listItems = (ListView) findViewById(R.id.list);
 
         //Set Empty View
-        View emptyView=(View)findViewById(R.id.emptyView);
+        View emptyView = (View) findViewById(R.id.emptyView);
         listItems.setEmptyView(emptyView);
 
         //Initialise Cursor Adapter and setAdapter to the Cursor Adapter
 
-        mCursorAdapter=new SaleCursorAdapter(this,null);
+        mCursorAdapter = new SaleCursorAdapter(this, null);
         listItems.setAdapter(mCursorAdapter);
 
         listItems.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                Log.e(LOG_TAG,"Item Clicked");
-                Intent intent=new Intent(MainActivity.this,EditorActivity.class);
-                Uri currentItemUri= ContentUris.withAppendedId(SaleEntry.CONTENT_URI,id);
+                Log.e(LOG_TAG, "Item Clicked");
+                Intent intent = new Intent(MainActivity.this, EditorActivity.class);
+                Uri currentItemUri = ContentUris.withAppendedId(SaleEntry.CONTENT_URI, id);
                 intent.setData(currentItemUri);
                 startActivity(intent);
             }
         });
 
-        getLoaderManager().initLoader(SALE_LOADER,null,this);
+        getLoaderManager().initLoader(SALE_LOADER, null, this);
     }
 
-    private void addDummyItem(){
+    private void addDummyItem() {
 //        SQLiteDatabase db= mDbHelper.getWritableDatabase();
-        ContentValues value=new ContentValues();
+        ContentValues value = new ContentValues();
 
-        value.put(SaleEntry.COLUMN_ITEM_NAME,"Generic");
-        value.put(SaleEntry.COLUMN_ITEM_DESCRIPTION,"This is a generic description");
-        value.put(SaleEntry.COLUMN_ITEM_UNIT_PRICE,60);
-        value.put(SaleEntry.COLUMN_ITEM_QUANTITY,35);
-        value.put(SaleEntry.COLUMN_ITEM_IMAGE,"null");
-        value.put(SaleEntry.COLUMN_ITEM_SUPPLIER,"Neotron");
+        value.put(SaleEntry.COLUMN_ITEM_NAME, "Generic");
+        value.put(SaleEntry.COLUMN_ITEM_DESCRIPTION, "This is a generic description");
+        value.put(SaleEntry.COLUMN_ITEM_UNIT_PRICE, 60);
+        value.put(SaleEntry.COLUMN_ITEM_QUANTITY, 35);
+        value.put(SaleEntry.COLUMN_ITEM_IMAGE, "null");
+        value.put(SaleEntry.COLUMN_ITEM_SUPPLIER, "Neotron");
 
-        Uri newUri=getContentResolver().insert(SaleEntry.CONTENT_URI,value);
+        Uri newUri = getContentResolver().insert(SaleEntry.CONTENT_URI, value);
 
-        if(newUri==null){
-            Toast.makeText(this,"Entry not sucessfull in Main Activity",Toast.LENGTH_SHORT).show();
-        }
-        else{
-            Toast.makeText(this,"Entry sucessfull in Main Activity",Toast.LENGTH_SHORT).show();
+        if (newUri == null) {
+            Toast.makeText(this, "Entry not sucessfull in Main Activity", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "Entry sucessfull in Main Activity", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private Cursor returnCursor(){
-        String [] projection={
+    private Cursor returnCursor() {
+        String[] projection = {
                 SaleEntry._ID,
                 SaleEntry.COLUMN_ITEM_NAME,
                 SaleEntry.COLUMN_ITEM_DESCRIPTION,
@@ -122,35 +121,35 @@ public class MainActivity extends AppCompatActivity implements  LoaderManager.Lo
                 SaleEntry.COLUMN_ITEM_QUANTITY,
                 SaleEntry.COLUMN_ITEM_IMAGE};
 //        Cursor cursor=db.query(SaleEntry.TABLE_NAME,projection,null,null,null,null,null);
-        Cursor cursor=getContentResolver().query(SaleEntry.CONTENT_URI,projection,null,null,null);
+        Cursor cursor = getContentResolver().query(SaleEntry.CONTENT_URI, projection, null, null, null);
         return cursor;
     }
 
     private void displayDatabaseInfo() {
-        SaleCursorAdapter cursorAdapter=new SaleCursorAdapter(this,returnCursor());
+        SaleCursorAdapter cursorAdapter = new SaleCursorAdapter(this, returnCursor());
         listItems.setAdapter(cursorAdapter);
 
     }
 
-    private void deleteEntireTable(){
-        int noOfDeletedItems=getContentResolver().delete(SaleEntry.CONTENT_URI,null,null);
-        Toast.makeText(this,noOfDeletedItems+" items deleted",Toast.LENGTH_SHORT).show();
+    private void deleteEntireTable() {
+        int noOfDeletedItems = getContentResolver().delete(SaleEntry.CONTENT_URI, null, null);
+        Toast.makeText(this, noOfDeletedItems + " items deleted", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle args) {
-        String[] projection={
+        String[] projection = {
                 SaleEntry._ID,
                 SaleEntry.COLUMN_ITEM_NAME,
                 SaleEntry.COLUMN_ITEM_QUANTITY,
                 SaleEntry.COLUMN_ITEM_UNIT_PRICE,
         };
-            return new CursorLoader(this,
-                    SaleEntry.CONTENT_URI,
-                    projection,
-                    null,
-                    null,
-                    null);
+        return new CursorLoader(this,
+                SaleEntry.CONTENT_URI,
+                projection,
+                null,
+                null,
+                null);
     }
 
     @Override
