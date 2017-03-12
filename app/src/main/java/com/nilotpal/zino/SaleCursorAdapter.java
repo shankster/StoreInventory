@@ -58,6 +58,7 @@ public class SaleCursorAdapter extends CursorAdapter {
                 Uri currentItemUri = ContentUris.withAppendedId(SaleContract.SaleEntry.CONTENT_URI, id);
                 Log.e(SaleCursorAdapter.class.getName(),"the quantity for this element is "+quantity+" and  the id is "+id);
                 int modifiedQuantity=quantity-1;
+                if (modifiedQuantity>=0){
                 String entryModifiedQuantity=Integer.toString(modifiedQuantity);
                 ContentValues values=new ContentValues();
                 values.put(SaleContract.SaleEntry.COLUMN_ITEM_QUANTITY,entryModifiedQuantity);
@@ -69,6 +70,9 @@ public class SaleCursorAdapter extends CursorAdapter {
                     Log.e(SaleCursorAdapter.class.getName(),"sale succesfull");
                 }
 
+            }
+            else {
+                }
             }
         });
 
