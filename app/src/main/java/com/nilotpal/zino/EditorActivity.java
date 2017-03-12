@@ -23,6 +23,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nilotpal.zino.data.SaleContract.SaleEntry;
@@ -46,6 +47,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     private ImageView mImage;
     private EditText mSupplier;
     private Uri mImageUri;
+    private TextView imageUriText;
 
     //Boolean counter to keep track whether the data has changed or not
     private Boolean mItemHasChanged = false;
@@ -86,6 +88,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mQuantity = (EditText) findViewById(R.id.quantity);
         mSupplier = (EditText) findViewById(R.id.supplier);
         mImage=(ImageView)findViewById(R.id.displayImage);
+        imageUriText=(TextView) findViewById(R.id.imageContentUri);
 
 
         //Set On Touch Listeners
@@ -170,9 +173,20 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         deleteItem.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                deleteItem();
-                Intent intent = new Intent(EditorActivity.this, MainActivity.class);
-                startActivity(intent);
+
+                DialogInterface.OnClickListener discardButtonClickListener =
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                // User clicked "Discard" button, close the current activity.
+                                deleteItem();
+                                Intent intent = new Intent(EditorActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+                        };
+                // Show dialog that there are unsaved changes
+                showDeleteDialog(discardButtonClickListener);
             }
         });
 
@@ -280,6 +294,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             if (resultData != null) {
                 mImageUri = resultData.getData();
                 Log.i(LOG_TAG, "Uri: " + mImage.toString());
+                imageUriText.setText(mImageUri.toString());
 
                 mImage.setImageBitmap(getBitmapFromUri(mImageUri));
             }
@@ -294,6 +309,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         String unitPriceValue = mUnitPrice.getText().toString().trim();
         String quantityValue = mQuantity.getText().toString().trim();
         String supplierValue = mSupplier.getText().toString().trim();
+        String imageValue=mImageUri.toString();
 
 
 
@@ -304,6 +320,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         values.put(SaleEntry.COLUMN_ITEM_UNIT_PRICE, unitPriceValue);
         values.put(SaleEntry.COLUMN_ITEM_QUANTITY, quantityValue);
         values.put(SaleEntry.COLUMN_ITEM_SUPPLIER, supplierValue);
+        values.put(SaleEntry.COLUMN_ITEM_IMAGE,imageValue);
 
 
         if (mCurrentSaleUri == null) {
@@ -380,6 +397,27 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
+    private void showDeleteDialog(
+            DialogInterface.OnClickListener discardButtonClickListener) {
+        // Create an AlertDialog.Builder and set the message, and click listeners
+        // for the positive and negative buttons on the dialog.
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("You sure you want to delete this item ?");
+        builder.setPositiveButton("Yes", discardButtonClickListener);
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int id) {
+                // User clicked the "Keep editing" button, so dismiss the dialog
+                // and continue editing the pet.
+                if (dialog != null) {
+                    dialog.dismiss();
+                }
+            }
+        });
+
+        // Create and show the AlertDialog
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
 
     private void deleteItem() {
         if (mCurrentSaleUri != null) {
@@ -424,7 +462,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 SaleEntry.COLUMN_ITEM_DESCRIPTION,
                 SaleEntry.COLUMN_ITEM_UNIT_PRICE,
                 SaleEntry.COLUMN_ITEM_QUANTITY,
-                SaleEntry.COLUMN_ITEM_SUPPLIER
+                SaleEntry.COLUMN_ITEM_SUPPLIER,
+                SaleEntry.COLUMN_ITEM_IMAGE
         };
         return new CursorLoader(this,
                 mCurrentSaleUri,
@@ -447,6 +486,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             int unitPriceColumnIndex = cursor.getColumnIndex(SaleEntry.COLUMN_ITEM_UNIT_PRICE);
             int quantityColumnIndex = cursor.getColumnIndex(SaleEntry.COLUMN_ITEM_QUANTITY);
             int supplierColumnIndex = cursor.getColumnIndex(SaleEntry.COLUMN_ITEM_SUPPLIER);
+            int imageColumnIndex=cursor.getColumnIndex(SaleEntry.COLUMN_ITEM_IMAGE);
 
 
             String name = cursor.getString(nameColumnIndex);
@@ -454,12 +494,17 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
             int unitPrice = cursor.getInt(unitPriceColumnIndex);
             int quantity = cursor.getInt(quantityColumnIndex);
             String supplier = cursor.getString(supplierColumnIndex);
+            String imageDisplay=cursor.getString(imageColumnIndex);
+
+            Uri display=Uri.parse(imageDisplay);
+            Log.e(LOG_TAG,"Image Uri is "+display);
 
             mName.setText(name);
             mDescription.setText(description);
             mUnitPrice.setText(Integer.toString(unitPrice));
             mQuantity.setText(Integer.toString(quantity));
             mSupplier.setText(supplier);
+            mImage.setImageBitmap(getBitmapFromUri(display));
         }
     }
 
@@ -470,5 +515,6 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mUnitPrice.setText("");
         mQuantity.setText("");
         mSupplier.setText("");
+        mImage.setImageBitmap(null);
     }
 }
